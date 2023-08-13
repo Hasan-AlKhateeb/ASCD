@@ -65,7 +65,6 @@ const createCompany = async (req, res) => {
         res
             .status(StatusCodes.CREATED)
             .cookie('token', token, {
-                secure: true,
                 httpOnly: true,
                 maxAge: 8640000,
                 domain: `localhost`,
