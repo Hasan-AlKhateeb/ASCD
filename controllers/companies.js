@@ -11,7 +11,7 @@ const createCompany = async (req, res) => {
 
         // Process uploaded images using Multer
         const profileImg = req.files[0];
-        const companyImg = req.files[1];
+        //const companyImg = req.files[1];
 
         //Check if the email is already registered
         const existingCompany = await Company.findOne({ email });
@@ -20,7 +20,8 @@ const createCompany = async (req, res) => {
         }
 
         // limit the image size up to 5 MB
-        if(profileImg.size > 5242880 || companyImg.size > 5242880){
+        // || companyImg.size > 5242880
+        if(profileImg.size > 5242880){
             res.status(StatusCodes.BAD_REQUEST).json({ error: 'Both files are/one file is too large to be uploaded, choose another file and try again' });
         }
 
@@ -30,9 +31,9 @@ const createCompany = async (req, res) => {
         
         // Process and save the images to the local storage
         const uniqueProfileImgName = Date.now() + '-' + profileImg.originalname;
-        const uniqueCompanyImgName = Date.now() + '-' + companyImg.originalname;
+        //const uniqueCompanyImgName = Date.now() + '-' + companyImg.originalname;
         const profileImgPath = path.join(imageFolder, uniqueProfileImgName);
-        const companyImgPath = path.join(imageFolder, uniqueCompanyImgName);
+        //const companyImgPath = path.join(imageFolder, uniqueCompanyImgName);
 
         fs.rename(profileImg.path, profileImgPath, (err) => {
             if(err){
@@ -40,11 +41,11 @@ const createCompany = async (req, res) => {
             }
         }); // Move the uploaded file to the 'images' folder with the unique filename
 
-        fs.rename(companyImg.path, companyImgPath, (err) => {
-            if(err){
-                throw err
-            }
-        }); // Move the uploaded file to the 'images' folder with the unique filename
+        // fs.rename(companyImg.path, companyImgPath, (err) => {
+        //     if(err){
+        //         throw err
+        //     }
+        // }); // Move the uploaded file to the 'images' folder with the unique filename
 
         const newCompany = await Company.create({
             email,
@@ -55,8 +56,8 @@ const createCompany = async (req, res) => {
             accounts: accounts.split(',').map(account => account.trim()), // Convert comma-separated string to an array
             desc,
             profileImgUrl: profileImgPath,
-            companyImgUrl: companyImgPath,
         });
+        //companyImgUrl: companyImgPath,
 
         // Generate a JWT token for the user
         const token = newCompany.createJWT();
@@ -72,7 +73,6 @@ const createCompany = async (req, res) => {
             })
             .json({ message: 'Company created successfully', company: newCompany, token });
     } catch (error) {
-        console.log(error)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Something went wrong' });
     }
 };
